@@ -8,14 +8,16 @@ const WordList = struct {
 };
 
 // Given a string parse the words and store them in a double linked list
-pub fn parseWordsToDL(text: []u8) !*WordList {
+pub fn parseWordsToDL(text: []u8) !?*WordList {
     var list: DoublyLinkedList = .{};
 
-    const it = std.mem.splitSequence(u8, text, " ,.");
+    var count: usize = 0;
+    var it = std.mem.splitSequence(u8, text, " ");
     while(it.next()) |word| {
-        try std.debug.print("{}", .{word});
+        count += 1;
+        std.debug.print("{s}\n", .{word});
     }
-
+    std.debug.print("Count {d}\n", .{count});
     const L = struct {
         data: u32,
         node: DoublyLinkedList.Node = .{},
