@@ -9,7 +9,19 @@ const Word = struct {
 
 const WordList = struct {
     list: std.DoublyLinkedList = .{},
+    allocator: std.mem.Allocator,
     const Self = @This();
+
+    pub fn init(allocator: std.mem.Allocator) Self {
+        return .{ .allocator = allocator };
+    }
+
+    pub fn deinit(self: *Self) void {
+        while (self.list.popFirst()) |node| {
+            const ptr: *Word = @fieldParentPtr("node", node);
+            self.allocator.destroy(ptr);
+        }
+    }
 
     pub fn append(self: *Self, item: *Word) void {
         self.list.append(&item.node);
@@ -26,7 +38,7 @@ const WordList = struct {
 // Given a string parse the words and store them in a double linked list
 pub fn parseWordsToDL(allocator: std.mem.Allocator, text: []u8) !?*WordList {
     const list = try allocator.create(WordList);
-    list.* = WordList{};
+    list.* = WordList.init(allocator);
 
     var count: usize = 0;
     var it = std.mem.splitSequence(u8, text, " ");
