@@ -21,13 +21,14 @@ pub fn main() !void {
     const word_list = try zigdl.parseWordsToDL(allocator, text);
 
     if (word_list) |wl| {
+        defer allocator.destroy(wl);
         defer wl.deinit();
-        defer allocator.free(wl);
         // I don't know how to iterate the list yet from the root WordList node.
         // The DoublyLinkedList is in the `node` field.
         // For now, just print the word in the returned node.
         if (wl.popFirst()) |first| {
             std.debug.print("First word: {s}\n", .{first.word});
+            allocator.destroy(first);
         }
     } else {
         std.debug.print("parseWordsToDL returned null\n", .{});
