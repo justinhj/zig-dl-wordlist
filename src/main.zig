@@ -18,7 +18,7 @@ pub fn main() !void {
     const text = try std.fs.cwd().readFileAlloc(allocator, filename, 1024 * 1024); // 1MB limit
     defer allocator.free(text);
 
-    const word_list = try zigdl.parseWordsToDL(text);
+    const word_list = try zigdl.parseWordsToDL(allocator, text);
 
     if (word_list) |wl| {
         // I don't know how to iterate the list yet from the root WordList node.
