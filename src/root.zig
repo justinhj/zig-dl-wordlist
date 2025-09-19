@@ -1,23 +1,44 @@
 //! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
+const DoublyLinkedList = std.DoublyLinkedList;
 
-pub fn bufferedPrint() !void {
-    // Stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    var stdout_buffer: [1024]u8 = undefined;
-    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout = &stdout_writer.interface;
+const WordList = struct {
+    word: []const u8,
+    node: DoublyLinkedList.Node = .{},
+};
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
+// Given a string parse the words and store them in a double linked list
+pub fn parseWordsToDL(text: []u8) !*WordList {
+    var list: DoublyLinkedList = .{};
 
-    try stdout.flush(); // Don't forget to flush!
+    const it = std.mem.splitSequence(u8, text, " ,.");
+    while(it.next()) |word| {
+        try std.debug.print("{}", .{word});
+    }
+
+    const L = struct {
+        data: u32,
+        node: DoublyLinkedList.Node = .{},
+    };
+
+    var one: L = .{ .data = 1 };
+    var two: L = .{ .data = 2 };
+    var three: L = .{ .data = 3 };
+    var four: L = .{ .data = 4 };
+    var five: L = .{ .data = 5 };
+
+    var word1: WordList = .{ .word = "Field" };
+    list.append(&word1.node);
+
+    list.append(&two.node); // {2}
+    list.append(&five.node); // {2, 5}
+    list.prepend(&one.node); // {1, 2, 5}
+    list.insertBefore(&five.node, &four.node); // {1, 2, 4, 5}
+    list.insertAfter(&two.node, &three.node); // {1, 2, 3, 4, 5}
+    return null;
 }
 
-pub fn add(a: i32, b: i32) i32 {
-    return a + b;
-}
 
 test "basic add functionality" {
-    try std.testing.expect(add(3, 7) == 10);
+    try std.testing.expect(3 + 7 == 10);
 }

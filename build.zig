@@ -57,9 +57,8 @@ pub fn build(b: *std.Build) void {
     //
     // If neither case applies to you, feel free to delete the declaration you
     // don't need and to put everything under a single module.
-    const exe = b.addExecutable(.{
-        .name = "zigdl",
-        .root_module = b.createModule(.{
+
+    const module = b.createModule(.{
             // b.createModule defines a new module just like b.addModule but,
             // unlike b.addModule, it does not expose the module to consumers of
             // this package, which is why in this case we don't have to give it a name.
@@ -80,7 +79,11 @@ pub fn build(b: *std.Build) void {
                 // importing modules from different packages).
                 .{ .name = "zigdl", .module = mod },
             },
-        }),
+        });
+
+    const exe = b.addExecutable(.{
+        .name = "zigdl",
+        .root_module = module
     });
 
     // This declares intent for the executable to be installed into the
@@ -88,6 +91,14 @@ pub fn build(b: *std.Build) void {
     // step). By default the install prefix is `zig-out/` but can be overridden
     // by passing `--prefix` or `-p`.
     b.installArtifact(exe);
+
+    const check_exe = b.addExecutable(.{
+        .name = "zigdl",
+        .root_module = module
+    });
+
+    const check = b.step("check", "Check compile");
+    check.dependOn(&check_exe.step);
 
     // This creates a top level step. Top level steps have a name and can be
     // invoked by name when running `zig build` (e.g. `zig build run`).
