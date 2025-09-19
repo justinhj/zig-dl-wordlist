@@ -2,9 +2,26 @@
 const std = @import("std");
 const DoublyLinkedList = std.DoublyLinkedList;
 
-const WordList = struct {
+const Word = struct {
     word: []const u8,
     node: DoublyLinkedList.Node = .{},
+};
+
+const WordList = struct {
+    list: std.DoublyLinkedList = .{},
+    const Self = @This();
+
+   pub fn append(self: *Self, item: *Word) void {
+        self.list.append(item);
+    }
+
+    pub fn popFirst(self: *Self) ?*Word {
+        if (self.list.popFirst()) |node| {
+            return @fieldParentPtr("node", node);
+        }
+        return null;
+    }
+
 };
 
 // Given a string parse the words and store them in a double linked list
@@ -29,7 +46,7 @@ pub fn parseWordsToDL(text: []u8) !?*WordList {
     var four: L = .{ .data = 4 };
     var five: L = .{ .data = 5 };
 
-    var word1: WordList = .{ .word = "Field" };
+    var word1: Word = .{ .word = "Field" };
     list.append(&word1.node);
 
     list.append(&two.node); // {2}

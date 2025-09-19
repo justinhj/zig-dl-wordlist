@@ -24,7 +24,9 @@ pub fn main() !void {
         // I don't know how to iterate the list yet from the root WordList node.
         // The DoublyLinkedList is in the `node` field.
         // For now, just print the word in the returned node.
-        std.debug.print("First word: {s}\n", .{wl.word});
+        if (wl.popFirst()) |first| {
+            std.debug.print("First word: {s}\n", .{first.word});
+        }
     } else {
         std.debug.print("parseWordsToDL returned null\n", .{});
     }
