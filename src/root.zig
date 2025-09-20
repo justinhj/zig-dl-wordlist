@@ -1,4 +1,3 @@
-//! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
 const DoublyLinkedList = std.DoublyLinkedList;
 
@@ -36,20 +35,17 @@ const WordList = struct {
 };
 
 // Given a string parse the words and store them in a double linked list
-pub fn parseWordsToDL(allocator: std.mem.Allocator, text: []u8) !?*WordList {
+pub fn parseWordsToDL(allocator: std.mem.Allocator, text: []u8) !*WordList {
     const list = try allocator.create(WordList);
     list.* = WordList.init(allocator);
 
     var count: usize = 0;
-    var it = std.mem.splitSequence(u8, text, " ");
+    var it = std.mem.tokenizeAny(u8, text, " \t\r\n.,;:!?()[]\"'");
     while (it.next()) |word| {
         count += 1;
         const word_ptr = try allocator.create(Word);
         word_ptr.* = Word{ .word = word };
-        std.debug.print("{s}\n", .{word});
         list.append(word_ptr);
     }
-    std.debug.print("Count {d}\n", .{count});
-
     return list;
 }
